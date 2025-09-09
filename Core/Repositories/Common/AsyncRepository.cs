@@ -96,6 +96,12 @@ namespace Repositories.Common
             return await queryable.FirstOrDefaultAsync(predicate);
         }
 
+  
+
+        public async Task SaveChangesAsync()
+        {
+            await db.SaveChangesAsync();
+        }
         public async Task<T> UpdateAsync(T entity)
         {
             await Task.Run(() =>

@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Features.Card.Queries.GetAllCard
+namespace Services.Impl.Register
 {
-    public class GetAllCardQueryResponse
+    public interface IRegisterService
     {
-
-
-
+        public Task Register(RegisterDto registerDto);
     }
 }

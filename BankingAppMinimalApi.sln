@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Core\Application\Application.csproj", "{6B998A8B-A838-46A5-BAEC-CC0660A3F202}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Implementation", "Core\Services\Services.Implementation.csproj", "{8D64B904-E89B-4D74-B53E-C8BF43D0A283}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Core\Services\Services.csproj", "{8D64B904-E89B-4D74-B53E-C8BF43D0A283}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Core\Domain\Domain.csproj", "{1A46856F-9F8B-413C-8633-859FA042747F}"
 EndProject
@@ -25,7 +25,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankingApp", "Presentation\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories", "Core\Repositories\Repositories.csproj", "{499CD28C-1944-4DDF-8214-6B25CF31DD4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Core\Services.Impl\Services.csproj", "{D625715F-82F5-4FA7-A714-C3156D811216}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Impl", "Core\Services.Impl\Services.Impl.csproj", "{D625715F-82F5-4FA7-A714-C3156D811216}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

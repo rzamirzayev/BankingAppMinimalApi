@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Mapper\Mapper.csproj" />
+    <ProjectReference Include="..\Services.Impl\Services.Impl.csproj" />
   </ItemGroup>
 
 </Project>

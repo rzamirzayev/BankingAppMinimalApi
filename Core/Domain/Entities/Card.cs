@@ -15,7 +15,7 @@ namespace Domain.Entities
         public double CashbackBalance { get; set; }
         public double MonthltSpent { get; set; }
         public int Cvv { get; set; }
-        public DateTime ExpiryDate { get; set; }
+        public string ExpiryDate { get; set; }
         public int Code { get; set; }
 
         public int CardTypeId { get; set; }

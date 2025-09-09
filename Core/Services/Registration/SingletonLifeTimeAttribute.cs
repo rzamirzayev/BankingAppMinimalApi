@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.Implementation.Registration
+namespace Services.Registration
 {
     [AttributeUsage(AttributeTargets.Class)]
     class SingletonLifeTimeAttribute : Attribute

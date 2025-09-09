@@ -34,6 +34,23 @@ namespace Persistence
             })
                 .AddRoles<Role>()
                 .AddEntityFrameworkStores<DataContext>();
+
+            var assembly = typeof(Registration).Assembly; 
+            var types = assembly.GetTypes()
+                .Where(t => t.IsClass && !t.IsAbstract) 
+                .Select(t => new
+                {
+                    Implementation = t,
+                    Interfaces = t.GetInterfaces()
+                });
+
+            foreach (var type in types)
+            {
+                foreach (var iface in type.Interfaces)
+                {
+                    services.AddScoped(iface, type.Implementation);
+                }
+            }
         }
 
     }

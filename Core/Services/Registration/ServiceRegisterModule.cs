@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.Implementation.Registration
+namespace Services.Registration
 {
     public class ServiceRegisterModule:Autofac.Module
     {

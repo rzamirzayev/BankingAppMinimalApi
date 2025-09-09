@@ -40,6 +40,7 @@ namespace Repositories.Common
         Task DeleteAsync(T entity);
 
         Task DeleteRangeAsync(IList<T> entities);
+        Task SaveChangesAsync();
 
 
 

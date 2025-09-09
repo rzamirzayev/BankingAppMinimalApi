@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Services.Impl.Login
 {
-    public interface ILoginService
+    public class LoginRequestDto
     {
-        public Task<LoginResponseDto> Login(LoginRequestDto loginDto,CancellationToken cancellationToken);
+        public string Email { get; set; }
+        public string Password { get; set; }
     }
 }

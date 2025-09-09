@@ -1,38 +1,60 @@
 ﻿using Domain.Entities;
 using Mapper.Mapper;
+using Microsoft.AspNetCore.Http;
 using Repositories;
-using Services.Card;
+using Services.Bases;
+using Services.Impl.Card;
+using System.Threading.Tasks;
 
-namespace Services.Implementation
+namespace Services
 {
-    public class CardService : ICardService
+    public class CardService :BaseHandler, ICardService
     {
         private readonly ICardRepository cardRepository;
-        private readonly IMapperr mapper;
-        public CardService(ICardRepository cardRepository,IMapperr mapper)
+        private readonly ICardTypeRepository cardTypeRepository;
+        public CardService(ICardRepository cardRepository,ICardTypeRepository cardTypeRepository,IMapperr mapper,IHttpContextAccessor httpContextAccessor):base(httpContextAccessor, mapper)
         {
             this.cardRepository = cardRepository;
-            this.mapper = mapper;
+            this.cardTypeRepository = cardTypeRepository;
         }
-        public void CashbackToBalance(CardOperationDto request)
+ 
+        public void CashbackToBalance(double cashbackAmount)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<List<CardDto>> GetCardByUserId()
+        {
+            List<Card> cards = (List<Card>)await cardRepository.GetAllAsync(c => c.UserId == Guid.Parse(userId));
+            List<CardDto> cardDtos = new List<CardDto>();
+            foreach (Card cardDto in cards) {
+                CardDto card = mapper.Map<CardDto, Domain.Entities.Card>(cardDto);
+                card.CardTypeName = (await cardTypeRepository.GetAsync(ct => ct.Id == cardDto.CardTypeId)).Name;
+                cardDtos.Add(card);
+
+            }
+            return cardDtos;
+        }
+
+        public Task<CardDto> GetCardById(int cardId)
         {
             throw new NotImplementedException();
         }
 
-        public CardDto CreateCard(CardDtoIU request)
+        public async Task<CardDto> CreateCard(CardDtoIU request)
         {
-            Domain.Entities.Card newCard = new()
-            {
-                CardNumber = GenerateCardNumber(),
-                CashbackBalance = 0,
-                MonthltSpent = 0,
-                Cvv = generateCvv(),
-                ExpiryDate = DateTime.Parse(GenerateExpiryDate()),
-            };
+            Card card = mapper.Map<Card,CardDtoIU>(request);
+            card.CardNumber = GenerateCardNumber();
+            card.Cvv = generateCvv();
+            card.ExpiryDate = GenerateExpiryDate();
+            card.CashbackBalance = 0;
+            card.MonthltSpent = 0;
             
-            cardRepository.AddAsync(newCard);
+            await cardRepository.AddAsync(card);
 
-            CardDto cardDto = mapper.Map<CardDto, Domain.Entities.Card>(newCard);
+            CardDto cardDto = mapper.Map<CardDto, Domain.Entities.Card>(card);
+            cardDto.CardTypeName = (await cardTypeRepository.GetAsync(ct => ct.Id == card.CardTypeId)).Name;
+
+            await cardRepository.SaveChangesAsync();
             return cardDto;
 
         }
@@ -42,22 +64,15 @@ namespace Services.Implementation
             throw new NotImplementedException();
         }
 
-        public List<CardDto> GetAllCards()
+
+
+        public void IncreaseBalance(string cardNumber, double balance)
         {
             throw new NotImplementedException();
         }
 
-        public CardDto GetCardById(int cardId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void IncreaseBalance(CardOperationDto request)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Payment(CardOperationDto request)
+     
+        public void Payment(double amount)
         {
             throw new NotImplementedException();
         }
@@ -93,5 +108,7 @@ namespace Services.Implementation
             DateTime expiry= DateTime.Now.AddYears(3);
             return expiry.ToString("MM/yy");
         }
+
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Context;
 using Repositories;
 using Repositories.Common;
 using System;
@@ -12,7 +13,7 @@ namespace Persistence.Repositories
 {
     class CardRepository : AsyncRepository<Card>, ICardRepository
     {
-        public CardRepository(DbContext db) : base(db)
+        public CardRepository(DataContext db) : base(db)
         {
         }
     }

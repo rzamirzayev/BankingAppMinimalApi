@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Card.Queries.GetAllCard
 {
-    public class GetAllCardQueryHandler
+    public class GetCardByUserIdQueryRequest:IRequest<List<GetCardByUserIdQueryResponse>>
     {
     }
 }

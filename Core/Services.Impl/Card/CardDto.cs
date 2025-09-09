@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.Card
+namespace Services.Impl.Card
 {
     public class CardDto
     {
         public string CardNumber { get; set; }
-        public string CardTypeId { get; set; }
+        public string CardTypeName { get; set; }
         public string Currency { get; set; }
         public double Balance { get; set; }
         public double CashbackBalance { get; set; }
