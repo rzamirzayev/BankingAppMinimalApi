@@ -22,12 +22,14 @@ namespace Persistence.Context.Configurations
             builder.HasOne(t => t.SenderCard)
                    .WithMany(c => c.SentTransactions)
                    .HasForeignKey(t => t.SenderCardId)
-                   .OnDelete(DeleteBehavior.Restrict);
+                   .OnDelete(DeleteBehavior.Restrict)
+                   .IsRequired(false);
 
             builder.HasOne(t => t.ReceiverCard)
                    .WithMany(c => c.ReceivedTransactions)
                    .HasForeignKey(t => t.ReceiverCardId)
-                   .OnDelete(DeleteBehavior.Restrict);
+                   .OnDelete(DeleteBehavior.Restrict)
+                   .IsRequired(false);
 
             builder.Property(t => t.transactionType)
                 .HasConversion<int>()

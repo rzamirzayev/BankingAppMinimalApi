@@ -3,7 +3,9 @@ using Mapper.Mapper;
 using Microsoft.AspNetCore.Http;
 using Repositories;
 using Services.Bases;
+using Services.Exceptions;
 using Services.Impl.Card;
+using Services.Impl.Transaction;
 using System.Threading.Tasks;
 
 namespace Services
@@ -12,17 +14,34 @@ namespace Services
     {
         private readonly ICardRepository cardRepository;
         private readonly ICardTypeRepository cardTypeRepository;
-        public CardService(ICardRepository cardRepository,ICardTypeRepository cardTypeRepository,IMapperr mapper,IHttpContextAccessor httpContextAccessor):base(httpContextAccessor, mapper)
+        private readonly ITransactionService transactionService;
+
+        public CardService(ICardRepository cardRepository,ICardTypeRepository cardTypeRepository,ITransactionService transactionService ,IMapperr mapper,IHttpContextAccessor httpContextAccessor):base(httpContextAccessor, mapper)
         {
             this.cardRepository = cardRepository;
             this.cardTypeRepository = cardTypeRepository;
+            this.transactionService = transactionService;
         }
  
-        public void CashbackToBalance(double cashbackAmount)
+        public async Task CashbackToBalance(string cardNumber, double cashbackAmount, CancellationToken c)
         {
-            throw new NotImplementedException();
+
+            Card? card = await cardRepository.GetAsync(c=>c.CardNumber==cardNumber);
+            if (card is not null && card.UserId.ToString()==userId)
+            {
+                if (cashbackAmount < 0) throw new Exception("Cashback amount must be positive");
+                if (card.CashbackBalance < cashbackAmount) throw new Exception("Not enough cashback balance");
+                card.Balance += cashbackAmount;
+                card.CashbackBalance -= cashbackAmount;
+                await cardRepository.UpdateAsync(card);
+                await cardRepository.SaveChangesAsync();
+            }
+            else
+            {
+                throw new CardNotFoundException();
+            }
         }
-        public async Task<List<CardDto>> GetCardByUserId()
+        public async Task<List<CardDto>> GetCardByUserId(CancellationToken cancellationToken)
         {
             List<Card> cards = (List<Card>)await cardRepository.GetAllAsync(c => c.UserId == Guid.Parse(userId));
             List<CardDto> cardDtos = new List<CardDto>();
@@ -35,12 +54,8 @@ namespace Services
             return cardDtos;
         }
 
-        public Task<CardDto> GetCardById(int cardId)
-        {
-            throw new NotImplementedException();
-        }
 
-        public async Task<CardDto> CreateCard(CardDtoIU request)
+        public async Task<CardDto> CreateCard(CardDtoIU request, CancellationToken cancellationToken)
         {
             Card card = mapper.Map<Card,CardDtoIU>(request);
             card.CardNumber = GenerateCardNumber();
@@ -58,33 +73,97 @@ namespace Services
             return cardDto;
 
         }
-
-        public void DeleteCard(int cardId)
+        public async Task IncreaseBalance(string cardNumber, double balance, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            Card? card = await cardRepository.GetAsync(c => c.CardNumber == cardNumber);
+            if (card is not null)
+            {
+
+                if (balance < 0) throw new Exception("Balance is must positive");
+                card.Balance += balance;
+                CashWithDrawTransactionDto transactionDto = new()
+                {
+                    ReceiverCardId = card.Id,
+                    Amount = balance,
+                };
+                await cardRepository.UpdateAsync(card);
+                await transactionService.CashWithDrawTransaction(transactionDto, cancellationToken);
+
+                await cardRepository.SaveChangesAsync();
+            }
+            else
+            {
+                throw new CardNotFoundException();
+            }
         }
 
 
-
-        public void IncreaseBalance(string cardNumber, double balance)
+        public async Task Payment(string cardNumber, double amount, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            Card card = await cardRepository.GetAsync(c => c.CardNumber == cardNumber);
+            if (card != null && userId == card.UserId.ToString())
+            {
+                PaymentTransactionDto paymentTransactionDto = new()
+                {
+                    SenderCardId = card.Id,
+                    Amount = amount,
+                };
+                double cashbackAmount = amount >= 100 ? (amount * 0.02) : (amount * 0.01);
+                await transactionService.PaymentTransaction(paymentTransactionDto, cancellationToken);
+                card.CashbackBalance += cashbackAmount;
+                card.Balance -= amount;
+                card.MonthltSpent += amount;
+                await cardRepository.UpdateAsync(card);
+                await cardRepository.SaveChangesAsync();
+
+            }
+            else
+            {
+                throw new CardNotFoundException();
+            }
         }
 
-     
-        public void Payment(double amount)
+        public async Task Transfer(CardOperationDto request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            Card card= await cardRepository.GetAsync(c => c.CardNumber == request.MyCardNumber);
+            Card receiverCard = await cardRepository.GetAsync(c => c.CardNumber == request.toCardNumber);
+            if (card is null || receiverCard is null) throw new CardNotFoundException();
+            if (card.UserId.ToString() != userId) throw new UnauthorizedAccessException("You are not authorized to perform this action");
+            if (request.amount < 0) throw new Exception("Amount must be positive");
+            if (card.Balance < request.amount) throw new Exception("Not enough balance");
+
+            card.Balance -= request.amount;
+            receiverCard.Balance += request.amount;
+            TransferTransactionDto transferTransactionDto = new()
+            {
+                SenderCardId = card.Id,
+                ReceiverCardId = receiverCard.Id,
+                Amount = request.amount,
+            };
+            await transactionService.TransferTransaction(transferTransactionDto,cancellationToken);
+            await cardRepository.UpdateAsync(card);
+            await cardRepository.UpdateAsync(receiverCard);
+            await cardRepository.SaveChangesAsync();
         }
 
-        public void Transfer(CardOperationDto request)
+        public async Task UpdateCardExpiryDate(string cardNumber,CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-        }
+            Card? card = await cardRepository.GetAsync(c => c.CardNumber == cardNumber);
+            if (card is not null && card.UserId.ToString() == userId)
+            {
+                if (DateTime.ParseExact(card.ExpiryDate, "MM/yy", null) > DateTime.Now)
+                {
+                    throw new Exception("Card is not expired yet");
+                }
+                card.ExpiryDate = GenerateExpiryDate();
+                await cardRepository.UpdateAsync(card);
+                await cardRepository.SaveChangesAsync();
+            }
+            else
+            {
+                throw new CardNotFoundException();
+            }
 
-        public void UpdateCardExpiryDate(int cardId)
-        {
-            throw new NotImplementedException();
         }
 
         private string GenerateCardNumber()

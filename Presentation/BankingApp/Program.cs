@@ -1,4 +1,5 @@
 ﻿using Application;
+using Application.Exceptions;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using BankingApp.Endpoints;
@@ -81,6 +82,7 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+app.ConfigureExceptionHandlingMiddleware();
 app.UseAuthentication();
 app.UseAuthorization();
 

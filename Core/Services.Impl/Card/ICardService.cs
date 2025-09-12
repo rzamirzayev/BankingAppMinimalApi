@@ -1,28 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Services.Impl.Card
+﻿namespace Services.Impl.Card
 {
     public interface ICardService
     {
-        public  Task<CardDto> CreateCard(CardDtoIU request);
-        public Task<List<CardDto>> GetCardByUserId();
+        public Task<CardDto> CreateCard(CardDtoIU request,CancellationToken cancellationToken); 
+        public Task<List<CardDto>> GetCardByUserId(CancellationToken cancellationToken); 
+        public Task UpdateCardExpiryDate(string cardNumber,CancellationToken cancellationToken);
 
-        public void DeleteCard(int cardId);
+        public Task Transfer(CardOperationDto request,CancellationToken cancellationToken);
+        public Task IncreaseBalance(string cardNumber,double balance,CancellationToken cancellationToken);
 
-        public Task<CardDto> GetCardById(int cardId);
+        public Task Payment(string cardNumber,double amount, CancellationToken cancellationToken);
 
-        public void UpdateCardExpiryDate(int cardId);
-
-        public void Transfer(CardOperationDto request);
-        public void IncreaseBalance(string cardNumber,double balance);
-
-        public void Payment(double amount);
-
-        public void CashbackToBalance(double cashbackAmount);
+        public Task CashbackToBalance(string cardNumber,double cashbackAmount,CancellationToken cancellationToken);
 
     }
 }

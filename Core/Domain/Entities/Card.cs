@@ -15,7 +15,7 @@ namespace Domain.Entities
         public double CashbackBalance { get; set; }
         public double MonthltSpent { get; set; }
         public int Cvv { get; set; }
-        public string ExpiryDate { get; set; }
+        public required string ExpiryDate { get; set; }
         public int Code { get; set; }
 
         public int CardTypeId { get; set; }
@@ -25,7 +25,7 @@ namespace Domain.Entities
         public ICollection<Transaction> ReceivedTransactions { get; set; } = new List<Transaction>();
 
         public Guid UserId { get; set; }
-        public User User { get; set; }
+        public required User User { get; set; }
 
 
     }

@@ -13,11 +13,11 @@ namespace Domain.Entities
 
         public double Amount { get; set; }
 
-        public int SenderCardId { get; set; }
-        public Card SenderCard { get; set; } = null!;
+        public int? SenderCardId { get; set; }
+        public Card? SenderCard { get; set; } 
 
-        public int ReceiverCardId { get; set; }
-        public Card ReceiverCard { get; set; } = null!;
+        public int? ReceiverCardId { get; set; }
+        public Card? ReceiverCard { get; set; } 
 
         public TransactionType transactionType { get; set; }
     }

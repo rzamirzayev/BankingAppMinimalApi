@@ -21,7 +21,7 @@ namespace Application.Features.Card.Queries.GetAllCard
         }
         public async Task<List<GetCardByUserIdQueryResponse>> Handle(GetCardByUserIdQueryRequest request, CancellationToken cancellationToken)
         {
-            List<CardDto> result = await cardService.GetCardByUserId();
+            List<CardDto> result = await cardService.GetCardByUserId(cancellationToken);
             List<GetCardByUserIdQueryResponse> responses = new List<GetCardByUserIdQueryResponse>();
             foreach (var item in result)
             {

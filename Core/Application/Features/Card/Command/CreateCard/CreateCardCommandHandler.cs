@@ -23,7 +23,7 @@ namespace Application.Features.Card.Command.CreateCard
         public async Task<CreateCardCommandResponse> Handle(CreateCardCommandRequest request, CancellationToken cancellationToken)
         {
             CardDtoIU cardDtoIU = mapper.Map<CardDtoIU,CreateCardCommandRequest>(request);
-            var result = await cardService.CreateCard(cardDtoIU);
+            var result = await cardService.CreateCard(cardDtoIU,cancellationToken);
             CreateCardCommandResponse response = mapper.Map<CreateCardCommandResponse,CardDto>(result);
             return await Task.FromResult(response);
         }
